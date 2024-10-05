@@ -5,7 +5,7 @@ from rest_framework import status
 from rest_framework.permissions import IsAuthenticated, AllowAny
 from .models import Authors
 from .serializers import AuthorSerializer
-from api.token import validate_user
+from api.token import validate_user_and_get_user_id
 
 
 class AuthorsView(APIView):
@@ -36,10 +36,11 @@ class AuthorsView(APIView):
 
 
     def post(self, request):
-        if not validate_user(request.headers.get('Authorization')):
+        if not validate_user_and_get_user_id(request.headers.get('Authorization')):
             return Response({'error': 'Invalid Bearer Token'}, status=status.HTTP_401_UNAUTHORIZED)
 
         serializer = AuthorSerializer(data=request.data)
+        return Response('mannta[[]]')
         if serializer.is_valid():
             serializer.save()
             return Response(serializer.data, status=status.HTTP_201_CREATED)
@@ -48,7 +49,7 @@ class AuthorsView(APIView):
 
     def put(self, request, id):
         
-        if not validate_user(request.headers.get('Authorization')):
+        if not validate_user_and_get_user_id(request.headers.get('Authorization')):
             return Response({'error': 'Invalid Bearer Token'}, status=status.HTTP_401_UNAUTHORIZED)
         
         try:

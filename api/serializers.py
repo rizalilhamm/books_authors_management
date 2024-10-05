@@ -1,5 +1,5 @@
 from rest_framework import serializers
-from .models import Authors, Books
+from .models import Authors, Books, FavoriteBook
 
 class AuthorSerializer(serializers.ModelSerializer):
     class Meta:
@@ -35,3 +35,8 @@ class BookSerializer(serializers.ModelSerializer):
             'shelves',
             'description',
         ]
+        
+class FavoriteBookSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = FavoriteBook
+        fields = ['id', 'user', 'book_id', 'title', 'created_at']  

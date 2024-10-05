@@ -3,7 +3,7 @@ from rest_framework.response import Response
 from rest_framework.views import APIView
 from .models import Books
 from .serializers import BookSerializer
-from api.token import validate_user
+from api.token import validate_user_and_get_user_id
 
 
 class BooksView(APIView):
@@ -32,7 +32,7 @@ class BooksView(APIView):
 
 
     def post(self, request):
-        if not validate_user(request.headers.get('Authorization')):
+        if not validate_user_and_get_user_id(request.headers.get('Authorization')):
             return Response({'error': 'Invalid Bearer Token'}, status=status.HTTP_401_UNAUTHORIZED)
         
         serializer = BookSerializer(data=request.data)
@@ -43,7 +43,7 @@ class BooksView(APIView):
 
 
     def put(self, request, id):
-        if not validate_user(request.headers.get('Authorization')):
+        if not validate_user_and_get_user_id(request.headers.get('Authorization')):
             return Response({'error': 'Invalid Bearer Token'}, status=status.HTTP_401_UNAUTHORIZED)
         
         try:
@@ -60,7 +60,7 @@ class BooksView(APIView):
 
     def delete(self, request, id):
         
-        if not validate_user(request.headers.get('Authorization')):
+        if not validate_user_and_get_user_id(request.headers.get('Authorization')):
             return Response({'error': 'Invalid Bearer Token'}, status=status.HTTP_401_UNAUTHORIZED)
         
         try:

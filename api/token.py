@@ -1,19 +1,20 @@
 import jwt
 from django.conf import settings
 
-def validate_user(token):
+def validate_user_and_get_user_id(token):
     """
     Validates a JWT token.
     """
     if token is None:
-        return False
+        return 0
     
     token = token.split()
     if len(token) != 2:
-        return False
+        return 0
     
     try:
-        jwt.decode(token[1], settings.SECRET_KEY_JWT, algorithms=['HS256'])
-        return True 
+        decoded_token = jwt.decode(token[1], settings.SECRET_KEY_JWT, algorithms=['HS256'])
+        return decoded_token["id"]
+
     except (jwt.ExpiredSignatureError, jwt.InvalidTokenError):
-        return False  
+        return 0

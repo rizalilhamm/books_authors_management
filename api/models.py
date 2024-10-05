@@ -66,3 +66,18 @@ class Books(models.Model):
 
     def __str__(self):
         return self.title
+    
+class FavoriteBook(models.Model):
+    id = models.AutoField(primary_key=True)  # Auto-incrementing ID field
+    user = models.ForeignKey(User, on_delete=models.CASCADE)
+    book = models.ForeignKey(Books, on_delete=models.CASCADE)
+    title = models.CharField(max_length=255)
+    
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        db_table = "FavoriteBook"
+        unique_together = ('user', 'book')  # Ensures that a user can only add a book once
+
+    def __str__(self):
+        return f"{self.user.username}'s favorite: {self.book.title}"

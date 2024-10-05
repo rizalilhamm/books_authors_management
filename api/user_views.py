@@ -5,7 +5,8 @@ import bcrypt
 from datetime import datetime, timedelta
 import jwt
 from django.conf import settings
-from django.contrib.auth.models import User
+from api.models import User
+import ast
 
 
 class UserView(APIView):
@@ -47,7 +48,6 @@ class UserView(APIView):
         password = request.data.get('password')        
         
         user = User.objects.filter(username=username).values()
-        
         if len(user) <= 0:
             return Response({'error': 'Invalid credentials'}, status=status.HTTP_401_UNAUTHORIZED)
         
@@ -61,6 +61,7 @@ class UserView(APIView):
         payload = {
             'iat': datetime.utcnow(),
             'nbf': datetime.utcnow(),
+            'id': user[0]['id'],
             'username': user[0]['username'],
             'role': "USER",
         }
@@ -69,6 +70,7 @@ class UserView(APIView):
             settings.SECRET_KEY_JWT, 
             algorithm='HS256'
         )
+        
         
         return Response({'token': token, 'statusCode':status.HTTP_200_OK}, status=status.HTTP_200_OK)
     
