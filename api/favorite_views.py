@@ -22,6 +22,9 @@ class FavoriteBookAPIView(APIView):
         user = User.objects.get(id=user_id)
         
         favorite_books = FavoriteBook.objects.filter(user=user)
+        if len(favorite_books) == 0:
+            return Response({'message': 'No favorite books added'}, status=status.HTTP_200_OK)
+        
         serializer = FavoriteBookSerializer(favorite_books, many=True)
         return Response(serializer.data, status=status.HTTP_200_OK)
     

@@ -26,7 +26,8 @@ class BooksView(APIView):
             except Books.DoesNotExist:
                 return Response({"error": "Book not found."}, status=status.HTTP_404_NOT_FOUND)
 
-        books = Books.objects.all()
+        # Limit by 50 because Books has large data, as alternative we can make pagination for it.
+        books = Books.objects.all()[:50]
         serializer = BookSerializer(books, many=True)
         return Response(serializer.data, status=status.HTTP_200_OK)
 

@@ -30,7 +30,9 @@ class AuthorsView(APIView):
             except Authors.DoesNotExist:
                 return Response({'error': 'Author not found'}, status=status.HTTP_404_NOT_FOUND)
 
-        authors = Authors.objects.all()
+
+        # Limit by 50 because Books has large data, as alternative we can make pagination for it.
+        authors = Authors.objects.all()[:50]
         serializer = AuthorSerializer(authors, many=True)
         return Response(serializer.data, status=status.HTTP_200_OK)
 
