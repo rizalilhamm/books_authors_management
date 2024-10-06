@@ -66,6 +66,7 @@ class BooksView(APIView):
         try:
             book = Books.objects.get(id=id)
             book.delete()
-            return Response(status=status.HTTP_204_NO_CONTENT)
+            return Response({'message': 'Books deleted successfully'}, status=status.HTTP_204_NO_CONTENT)
+
         except Books.DoesNotExist:
             return Response({"error": "Book not found."}, status=status.HTTP_404_NOT_FOUND)

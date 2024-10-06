@@ -3,7 +3,7 @@ from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework import status
 from rest_framework.permissions import IsAuthenticated, AllowAny
-from .models import Authors
+from .models import Authors, BooksAuthors
 from .serializers import AuthorSerializer
 from api.token import validate_user_and_get_user_id
 
@@ -40,7 +40,6 @@ class AuthorsView(APIView):
             return Response({'error': 'Invalid Bearer Token'}, status=status.HTTP_401_UNAUTHORIZED)
 
         serializer = AuthorSerializer(data=request.data)
-        return Response('mannta[[]]')
         if serializer.is_valid():
             serializer.save()
             return Response(serializer.data, status=status.HTTP_201_CREATED)
@@ -65,13 +64,16 @@ class AuthorsView(APIView):
 
 
     def delete(self, request, id):
-        print('lalla: ',request.headers.get('Authorization'))
-        if not validate_user(request.headers.get('Authorization')):
+        if not validate_user_and_get_user_id(request.headers.get('Authorization')):
             return Response({'error': 'Invalid Bearer Token'}, status=status.HTTP_401_UNAUTHORIZED)
 
         try:
             author = Authors.objects.get(id=id)
+
+            BooksAuthors.objects.filter(author_id=author.id).delete()
             author.delete()
-            return Response(status=status.HTTP_204_NO_CONTENT)
+
+            return Response({'message': 'Authors deleted successfully'}, status=status.HTTP_204_NO_CONTENT)
+
         except Authors.DoesNotExist:
             return Response({'error': 'Author not found'}, status=status.HTTP_404_NOT_FOUND)

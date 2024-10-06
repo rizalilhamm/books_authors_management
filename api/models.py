@@ -13,6 +13,9 @@ class User(models.Model):
             return cls.objects.get(username=username)
         except cls.DoesNotExist:
             return None
+    
+    class Meta:
+        db_table = "User"
 
 
 class Authors(models.Model):
@@ -38,7 +41,7 @@ class Authors(models.Model):
 class Books(models.Model):
     id = models.CharField(max_length=255, primary_key=True)
     title = models.CharField(max_length=255)
-    authors = models.ManyToManyField('Authors', related_name='Books')  # Many-to-many relationship
+    authors = models.ManyToManyField('Authors', through='BooksAuthors', related_name='books')
     work_id = models.CharField(max_length=255)
     isbn = models.CharField(max_length=20, blank=True, null=True)
     isbn13 = models.CharField(max_length=20, blank=True, null=True)
@@ -80,4 +83,16 @@ class FavoriteBook(models.Model):
         unique_together = ('user', 'book')  # Ensures that a user can only add a book once
 
     def __str__(self):
-        return f"{self.user.username}'s favorite: {self.book.title}"
+        return f"{self.user.username}'s favorite: {self.book.title}"    
+
+
+class BooksAuthors(models.Model):
+    book = models.ForeignKey(Books, on_delete=models.CASCADE, related_name='books_authors')
+    author = models.ForeignKey(Authors, on_delete=models.CASCADE, related_name='authors_books')
+
+    class Meta:
+        db_table = 'Books_authors'
+        unique_together = ('book', 'author')
+
+    def __str__(self):
+        return f"{self.book.title} - {self.author.name}"
