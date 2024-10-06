@@ -55,7 +55,10 @@ class FavoriteBookAPIView(APIView):
             return Response({'error': 'invalid paylaod'}, status=status.HTTP_400_BAD_REQUEST)
 
         book = get_object_or_404(Books, id=book_id)
-        is_exist = FavoriteBook.objects.filter(user=user, book=book).values()
+        if FavoriteBook.objects.filter(user_id=user_id).count() >= 20:
+            return Response({"error": "You currently have a limit of 20 favorite books"}, status=status.HTTP_400_BAD_REQUEST)
+        
+        is_exist = FavoriteBook.objects.filter(user=user, book=book).values()    
         if len(is_exist) > 0:
             is_exist = is_exist[0]
             recommended_books = self.recommend_books(user, book, is_exist['title'])
